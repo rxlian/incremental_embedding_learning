@@ -34,3 +34,29 @@ main.py \
 ```
 # Data Preprocessing
 The origin data is in the form of .json. There are three origin files: train.json, valid.json, and test.json
+
+1. Generate history_embedding.npy, incoming_comment_embedding.npy, and accumulated_history_embedding.npy from pre-trained Bert for training, validation, and test, separately.
+history_embedding.npy is Bert embedding for each sequence with pre-pend label.
+incoming_comment_embedding.npy is Bert embedding for each sequence without label.
+accumulated_history_embedding.npy initialization is mean of past activities Bert embedding.
+The scripts are in the folder of **incremental_learning_preprocess** 
+Run the following block three times, each time input train, valid, or test file.
+```
+python generate_embedding.py \
+--model_path indicate_pretrained_bert_path \
+--file_path train.json \
+--save_path_incoming_comment indicate_path_save_incoming_comment_embedding_array_end_with.npy \
+--save_path_history_embedding indicate_path_save_history_embedding_array_end_with.npy \
+--save_path_accumulated_history_embedding indicate_path_save_accumulated_history_embedding_array_end_with.npy \
+```
+2. Generate DataSet with (user_id, t, label) in order to load into DataLoader during training.
+Run once to generate three files for training, validation, and test.
+```
+python generate_tuple.py \
+--train_file_path indicate_original_train_json_file_path \
+--valid_file_path indicate_original_valid_json_file_path \
+--test_file_path indicate_original_test_json_file_path \
+--train_save_path indicate_generated_train_file_path \
+--valid_save_path indicate_generated_valid_file_path \
+--test_save_path indicate_generated_test_file_path
+```
