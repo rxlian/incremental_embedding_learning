@@ -47,7 +47,7 @@ python generate_embedding.py \
 --file_path train.json \
 --save_path_incoming_comment indicate_path_save_incoming_comment_embedding_array_end_with.npy \
 --save_path_history_embedding indicate_path_save_history_embedding_array_end_with.npy \
---save_path_accumulated_history_embedding indicate_path_save_accumulated_history_embedding_array_end_with.npy \
+--save_path_accumulated_history_embedding indicate_path_save_accumulated_history_embedding_array_end_with.npy
 ```
 2. Generate DataSet with (user_id, t, label) in order to load into DataLoader during training.
 Run once to generate three files for training, validation, and test.
@@ -59,4 +59,30 @@ python generate_tuple.py \
 --train_save_path indicate_generated_train_file_path \
 --valid_save_path indicate_generated_valid_file_path \
 --test_save_path indicate_generated_test_file_path
+```
+# Training
+The scripts are in the folder of incremental_learning.
+Just crete the output_dir and then run `bash train.sh`.
+```
+python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --use_env \
+main.py \
+--output_dir /efs-storage/results4/multi_step_changeloss/output \
+--train_history_embedding ../data_chronological_v2/history_embedding_train.npy \
+--train_user_profile ../data_chronological_v2/user_profile_train.npy \
+--train_incoming_comment ../data_chronological_v2/incoming_comment_train.npy \
+--train_tuple ../multi_step_data_v2/tuple_train.json \
+--eval_history_embedding ../data_chronological_v2/history_embedding_valid.npy \
+--eval_user_profile ../data_chronological_v2/user_profile_valid.npy \
+--eval_incoming_comment ../data_chronological_v2/incoming_comment_valid.npy \
+--eval_tuple ../multi_step_data_v2/tuple_valid.json \
+--test_history_embedding ../data_chronological_v2/history_embedding_test.npy \
+--test_user_profile ../data_chronological_v2/user_profile_test.npy \
+--test_incoming_comment ../data_chronological_v2/incoming_comment_test.npy \
+--test_tuple ../multi_step_data_v2/tuple_test.json \
+--per_device_train_batch_size 64 \
+--per_device_eval_batch_size 64 \
+--num_train_epochs 10 \
+--learning_rate 2e-5 \
+> >(tee -a /efs-storage/results4/multi_step_changeloss1/stdout.log) \
+2> >(tee -a /efs-storage/results4/multi_step_changeloss1/stderr.log >&2)
 ```
