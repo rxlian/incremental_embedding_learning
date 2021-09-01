@@ -6,7 +6,8 @@
 The scripts are in the folder of **pretrain_bert**.
 First create the output_dir, where the trained model and log files will be saved.
 Then run `bash train.sh`
-`python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 \
+<html>
+python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 \
 main.py \
 --output_dir /efs-storage/results/untitled/output \
 --train_file ../alldata/train.json \
@@ -27,6 +28,7 @@ main.py \
 --output_file /efs-storage/results/untitled/models/ \
 --max_seq_length 128 \
 > >(tee -a /efs-storage/results/untitled/stdout.log) \
-2> >(tee -a /efs-storage/results/untitled/stderr.log >&2)`
+2> >(tee -a /efs-storage/results/untitled/stderr.log >&2)
+</html>
 # Data Preprocessing
 The origin data is in the form of .json. There are three origin files: train.json, valid.json, and test.json
