@@ -6,6 +6,7 @@
 The scripts are in the folder of **pretrain_bert**.
 
 First create the output_dir, where the trained model and log files will be saved.
+Indicate the train.json path, which contains 5M comments and their corresponding labels. Also indicate valid.json path, which will be used for validation.
 
 Then run `bash train.sh`
 ```
@@ -49,8 +50,9 @@ python generate_embedding.py \
 --save_path_history_embedding indicate_path_save_history_embedding_array_end_with.npy \
 --save_path_accumulated_history_embedding indicate_path_save_accumulated_history_embedding_array_end_with.npy
 ```
-2. Generate DataSet with (user_id, t, label) in order to load into DataLoader during training.
+2. Generate DataSet in the form of (user_id, t, label) in order to load them into DataLoader during training.
 Run once to generate three files for training, validation, and test.
+The dataset than is sorted in choronogical order for each user.
 ```
 python generate_tuple.py \
 --train_file_path indicate_original_train_json_file_path \
@@ -62,6 +64,7 @@ python generate_tuple.py \
 ```
 # Training
 The scripts are in the folder of incremental_learning.
+Indicate the path of history_embedding.npy, incoming_comment_embedding.npy, accumulated_history_embedding.npy, tuple_file.json generated from previous two steps for training, validation, and test, separately.
 Just crete the output_dir and then run `bash train.sh`.
 ```
 python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --use_env \
