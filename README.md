@@ -45,7 +45,7 @@ The origin data is in the form of .json. There are three origin files: train.jso
 
 1. The goal of this section is to generate history_embedding.npy, incoming_comment_embedding.npy, and accumulated_history_embedding.npy from pre-trained Bert for training, validation, and test, separately.
 If we do not want to incorporate history label information by pre-pending label in front of history sequence during encoding, then history_embedding.npy and incoming_comment_embedding.npy are the same thing.
-history_embedding.npy is Bert embedding array of all sequence by pre-pending sequence label in front of it. It is in shape of n*T*d.
+history_embedding.npy is Bert embedding array of all sequence by pre-pending sequence label in front of it. It is in shape of n\*T*d.
 incoming_comment_embedding.npy is Bert embedding array of all sequence without history label information. It is in shape of n*T*d.
 accumulated_history_embedding.npy initialization is mean of past activities Bert embeddings. It is in shape of n*T*d.
 
