@@ -4,7 +4,10 @@
 - Huggingface accelerate v0.4.0
 # Pretrain Bert
 The scripts are in the folder of **pretrain_bert**.
-
+We sample a few tokens in each sequence for MLM training (with probability 15%). 
+80% of the time, we replace masked input tokens with tokenizer.mask_token ([MASK]).
+10% of the time, we replace masked input tokens with random word.
+The rest of the time (10% of the time) we keep the masked input tokens unchanged.
 First create the output_dir, where the trained model and log files will be saved.
 Indicate the train.json path, which contains 5M comments and their corresponding labels. Also indicate valid.json path, which will be used for validation.
 
@@ -20,7 +23,7 @@ main.py \
 --per_device_train_batch_size 16 \
 --per_device_eval_batch_size 16 \
 --do_train \
---num_train_epochs 15 \
+--num_train_epochs 5 \
 --learning_rate 2e-5 \
 --logging_steps 100 \
 --save_steps 10000 \
