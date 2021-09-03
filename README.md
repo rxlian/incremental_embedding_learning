@@ -43,12 +43,21 @@ main.py \
 # Data Preprocessing
 The origin data is in the form of .json. There are three origin files: train.json, valid.json, and test.json
 
-1. Generate history_embedding.npy, incoming_comment_embedding.npy, and accumulated_history_embedding.npy from pre-trained Bert for training, validation, and test, separately.
-history_embedding.npy is Bert embedding for each sequence with pre-pend label.
-incoming_comment_embedding.npy is Bert embedding for each sequence without label.
-accumulated_history_embedding.npy initialization is mean of past activities Bert embedding.
+1. The goal of this section is to generate history_embedding.npy, incoming_comment_embedding.npy, and accumulated_history_embedding.npy from pre-trained Bert for training, validation, and test, separately.
+If we do not want to incorporate history label information by pre-pending label in front of history sequence during encoding, then history_embedding.npy and incoming_comment_embedding.npy are the same thing.
+history_embedding.npy is Bert embedding array of all sequence by pre-pending sequence label in front of it. It is in shape of n*T*d.
+incoming_comment_embedding.npy is Bert embedding array of all sequence without history label information. It is in shape of n*T*d.
+accumulated_history_embedding.npy initialization is mean of past activities Bert embeddings. It is in shape of n*T*d.
+
+Note: the sequences should be in the reverse chronological order before input into Bert for encoding because there is one following line inside the scirpt
+```
+np.flip(incoming_comment_embedding, axis=1)
+```
+This line flip the encoded array in the seconde dimension (the dimension on T) and thus make the array in chronological order. So, if the input is in the chronological order, then you have to comment the above line inside the script to make sure it is correct.
+
 The scripts are in the folder of **incremental_learning_preprocess** 
 Run the following block three times, each time input train, valid, or test file.
+The last three path should end with .npy because they save the numpy arrays. 
 ```
 python generate_embedding.py \
 --model_path $pretrained_bert_path \
@@ -57,6 +66,8 @@ python generate_embedding.py \
 --save_path_history_embedding ${train, valid, test}_history_embedding.npy \
 --save_path_accumulated_history_embedding ${train, valid, test}_accumulated_history_embedding.npy
 ```
+After running this, we will have nine numpy arrays. Each one of training, validation, and test set has three corresponding numpy arrays. For example, there are train_history_embedding.npy, train_accumulated_history_embedding.npy, and train_incoming_comments.npy. These arrays will be called during training.
+
 2. Generate DataSet in the form of (user_id, t, label) in order to load them into DataLoader during training.
 Run once to generate three files for training, validation, and test.
 The dataset than is sorted in choronogical order for each user.
