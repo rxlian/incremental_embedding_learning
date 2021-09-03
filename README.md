@@ -69,6 +69,7 @@ python generate_embedding.py \
 After running this, we will have nine numpy arrays. Each one of training, validation, and test set has three corresponding numpy arrays. For example, there are train_history_embedding.npy, train_accumulated_history_embedding.npy, and train_incoming_comments.npy. These arrays will be called during training.
 
 2. Generate DataSet in the form of (user_id, t, label) in order to load them into DataLoader during training.
+user_id indicating the index among n users. The second object t indicating the timestamp. Label is the time t's incoming comment true label. 
 Run once to generate three files for training, validation, and test.
 The dataset than is sorted in choronogical order for each user.
 ```
