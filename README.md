@@ -8,12 +8,14 @@ We sample a few tokens in each sequence for MLM training (with probability 15%).
 80% of the time, we replace masked input tokens with tokenizer.mask_token ([MASK]).
 10% of the time, we replace masked input tokens with random word.
 The rest of the time (10% of the time) we keep the masked input tokens unchanged.
+The most important part is how we modify and write the collate function defined in the Pytorch DataLoader. 
+Inside the `collate_fn`, we add mask to tokens in the way as we mentioned above.
 
 To excute the scripts, first create the output_dir, where the trained model and log files will be saved.
 Indicate the train.json path, which contains 5M comments and their corresponding labels. Also indicate valid.json path, which will be used for validation.
 Define the hyparameters such as batch size, learning rate, epoch, max seq length, etc. in the `train.sh` file
 
-Then run `bash train.sh`
+Then run `bash train.sh`. A sample of this shell file is as below. We have to define the output_dir, input_dir, and model parameters.
 ```
 python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 \
 main.py \
