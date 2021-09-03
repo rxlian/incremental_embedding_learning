@@ -8,8 +8,10 @@ We sample a few tokens in each sequence for MLM training (with probability 15%).
 80% of the time, we replace masked input tokens with tokenizer.mask_token ([MASK]).
 10% of the time, we replace masked input tokens with random word.
 The rest of the time (10% of the time) we keep the masked input tokens unchanged.
-First create the output_dir, where the trained model and log files will be saved.
+
+To excute the scripts, first create the output_dir, where the trained model and log files will be saved.
 Indicate the train.json path, which contains 5M comments and their corresponding labels. Also indicate valid.json path, which will be used for validation.
+Define the hyparameters such as batch size, learning rate, epoch, max seq length, etc. in the `train.sh` file
 
 Then run `bash train.sh`
 ```
