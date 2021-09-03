@@ -71,7 +71,8 @@ After running this, we will have nine numpy arrays. Each one of training, valida
 2. Generate DataSet in the form of (user_id, t, label) in order to load them into DataLoader during training.
 user_id indicating the index among n users. The second object t indicating the timestamp. Label is the time t's incoming comment true label. 
 Run once to generate three files for training, validation, and test.
-The dataset than is sorted in choronogical order for each user.
+
+Note: the last three path should end with .json indicating the dataset files.
 ```
 python generate_tuple.py \
 --train_file_path $train_json_dir \
@@ -81,9 +82,16 @@ python generate_tuple.py \
 --valid_save_path $tuple_valid_dir.json \
 --test_save_path $tuple_test_dir.json
 ```
+After running the above block, the dataset is sorted in choronogical order for each user. To be concrete, there is the following line in the script 
+```
+sorted(res, key=lambda x: (x[1]))
+```
+By using this line, the tuples are sorted by the second element t. Specifically, the t will be sorted in the chronological order for each user. And then those data will be input into the model sequentially. 
+
 # Training
 The scripts are in the folder of incremental_learning.
 Indicate the path of history_embedding.npy, incoming_comment_embedding.npy, accumulated_history_embedding.npy, tuple_file.json generated from previous two steps for training, validation, and test, separately.
+Define the hyparameters for training such as epoch, batch size, and learning rate, etc.
 Just crete the output_dir and then run `bash train.sh`.
 ```
 python -m torch.distributed.launch --nproc_per_node 8 --nnodes 1 --use_env \
@@ -108,3 +116,7 @@ main.py \
 > >(tee -a $output_dir/stdout.log) \
 2> >(tee -a $output_dir/stderr.log >&2)
 ```
+Since we have to input the data in the sequential time order, the important things should be noticed here is that first the Dataloader should not be shuffled, which means `shuffle=False`. 
+In order to update the accumulated_history_embedding.npy after each batch during training, we define the arrays of embedding as global variables. Specifically, we define global variables in the `variable.py`. 
+We re-write the Pytorch Dataset as well as `collate_fn` of Pytorch DataLoader. During each epoch, the Dataset and Dataloader will get tuples (user_id, t, label) from the .json files. And then inside dataset and collate_fn, we get the corresponding vector by index from pre-computed arrays of embeddings.
+Then after each batch during training, we gather the update accumulate_history_embedding array from 8 GPUs by Pytorch distributed gather inside the model. The updated vectors are returned by model. Then we further use these return values to update the global accumulate_history_embedding.npy.
